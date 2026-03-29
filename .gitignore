@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+.eggs/
+
+# Checkpoints (large binary files — add yours manually or use git-lfs)
+vector_nav/checkpoints/
+
+# ROS2 build artifacts
+vector_nav/ros2_ws/build/
+vector_nav/ros2_ws/install/
+vector_nav/ros2_ws/log/
+
+# Conda / virtualenv
+*.conda
+.env/
+venv/
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Calibration (machine-specific)
+vector_nav/config/homography.npy

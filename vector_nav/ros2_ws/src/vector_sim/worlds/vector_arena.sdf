@@ -1,0 +1,192 @@
+<?xml version="1.0" ?>
+<!--
+  vector_arena.sdf
+  ────────────────
+  Gazebo Harmonic (gz-sim) world for Vector MARL navigation.
+
+  Layout (top-down):
+  ┌──────────────────────────────────┐   y = +1.0 m
+  │                                  │
+  │   [G2]         [G0]              │   goal markers (translucent)
+  │                                  │
+  │   [V1]  [V2]  [V0]               │   Vector robots (proper mesh models)
+  │                                  │
+  │              [G1]                │
+  └──────────────────────────────────┘   y = -1.0 m
+  x = -1.0 m              x = +1.0 m
+
+  Arena inner dimensions: 2.0 m × 2.0 m
+  Wall thickness: 0.05 m
+
+  Robot model loaded from: models/vector/model.sdf
+  Meshes from: anki_description (github.com/nilseuropa/anki_description)
+-->
+<sdf version="1.9">
+  <world name="vector_arena">
+
+    <!-- ── Physics ─────────────────────────────────────────────────── -->
+    <physics name="1ms" type="ignored">
+      <max_step_size>0.001</max_step_size>
+      <real_time_factor>1.0</real_time_factor>
+    </physics>
+
+    <!-- ── Plugins ─────────────────────────────────────────────────── -->
+    <plugin filename="gz-sim-physics-system"
+            name="gz::sim::systems::Physics" />
+    <plugin filename="gz-sim-user-commands-system"
+            name="gz::sim::systems::UserCommands" />
+    <plugin filename="gz-sim-scene-broadcaster-system"
+            name="gz::sim::systems::SceneBroadcaster" />
+    <plugin filename="gz-sim-contact-system"
+            name="gz::sim::systems::Contact" />
+
+    <!-- ── Lighting ────────────────────────────────────────────────── -->
+    <light name="sun" type="directional">
+      <cast_shadows>true</cast_shadows>
+      <pose>0 0 10 0 0 0</pose>
+      <diffuse>0.8 0.8 0.8 1</diffuse>
+      <specular>0.2 0.2 0.2 1</specular>
+      <direction>-0.5 0.1 -0.9</direction>
+    </light>
+
+    <!-- ── Floor ───────────────────────────────────────────────────── -->
+    <model name="floor">
+      <static>true</static>
+      <pose>0 0 -0.005 0 0 0</pose>
+      <link name="floor_link">
+        <collision name="floor_col">
+          <geometry><box><size>4 4 0.01</size></box></geometry>
+        </collision>
+        <visual name="floor_vis">
+          <geometry><box><size>4 4 0.01</size></box></geometry>
+          <material>
+            <ambient>0.3 0.3 0.3 1</ambient>
+            <diffuse>0.4 0.4 0.4 1</diffuse>
+          </material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ── Arena walls ─────────────────────────────────────────────── -->
+    <model name="wall_east">
+      <static>true</static>
+      <pose>1.025 0 0.1 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.05 2.1 0.2</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.05 2.1 0.2</size></box></geometry>
+          <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_west">
+      <static>true</static>
+      <pose>-1.025 0 0.1 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>0.05 2.1 0.2</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>0.05 2.1 0.2</size></box></geometry>
+          <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_north">
+      <static>true</static>
+      <pose>0 1.025 0.1 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>2.1 0.05 0.2</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>2.1 0.05 0.2</size></box></geometry>
+          <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <model name="wall_south">
+      <static>true</static>
+      <pose>0 -1.025 0.1 0 0 0</pose>
+      <link name="link">
+        <collision name="col"><geometry><box><size>2.1 0.05 0.2</size></box></geometry></collision>
+        <visual name="vis">
+          <geometry><box><size>2.1 0.05 0.2</size></box></geometry>
+          <material><ambient>0.9 0.9 0.9 1</ambient><diffuse>0.9 0.9 0.9 1</diffuse></material>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ── Goal markers (translucent cylinders, no collision) ──────── -->
+    <model name="goal0">
+      <static>true</static>
+      <pose>0.6 0.6 0.02 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.05</radius><length>0.04</length></cylinder></geometry>
+          <material>
+            <ambient>0 0.8 0 0.4</ambient><diffuse>0 1.0 0 0.4</diffuse>
+            <emissive>0 0.3 0 0.2</emissive>
+          </material>
+          <transparency>0.5</transparency>
+        </visual>
+      </link>
+    </model>
+
+    <model name="goal1">
+      <static>true</static>
+      <pose>-0.6 -0.6 0.02 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.05</radius><length>0.04</length></cylinder></geometry>
+          <material>
+            <ambient>0 0.5 0.8 0.4</ambient><diffuse>0 0.6 1.0 0.4</diffuse>
+            <emissive>0 0.2 0.3 0.2</emissive>
+          </material>
+          <transparency>0.5</transparency>
+        </visual>
+      </link>
+    </model>
+
+    <model name="goal2">
+      <static>true</static>
+      <pose>0.0 0.7 0.02 0 0 0</pose>
+      <link name="link">
+        <visual name="vis">
+          <geometry><cylinder><radius>0.05</radius><length>0.04</length></cylinder></geometry>
+          <material>
+            <ambient>0.9 0.5 0.0 0.4</ambient><diffuse>1.0 0.6 0.0 0.4</diffuse>
+            <emissive>0.4 0.2 0.0 0.2</emissive>
+          </material>
+          <transparency>0.5</transparency>
+        </visual>
+      </link>
+    </model>
+
+    <!-- ── Vector robots (proper mesh model, skid-steer) ───────────── -->
+    <!--
+      Each robot included from models/vector/model.sdf.
+      The <plugin> topic override sets per-robot cmd_vel and pose topics.
+      spawn_z = 0.027 m  (base_footprint → base_link joint offset from xacro)
+    -->
+
+    <!-- Robots use per-robot model SDFs (models/vector0/, vector1/, vector2/)
+         each with DiffDrive topic hardcoded — no plugin injection needed. -->
+    <!-- spawn_z = wheel_radius + |wheel_z_offset| = 0.01314 + 0.012 = 0.025 m
+         This puts the front wheel bottom exactly at floor level (z=0). -->
+    <include>
+      <uri>model://vector0</uri>
+      <pose>0.3 0 0.025 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://vector1</uri>
+      <pose>-0.3 0 0.025 0 0 0</pose>
+    </include>
+
+    <include>
+      <uri>model://vector2</uri>
+      <pose>0 0.3 0.025 0 0 0</pose>
+    </include>
+
+  </world>
+</sdf>

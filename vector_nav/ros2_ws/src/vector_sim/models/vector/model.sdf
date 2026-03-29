@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+<!--
+  Anki Vector robot — Gazebo Harmonic SDF
+  ──────────────────────────────────────
+  Geometry from: github.com/nilseuropa/anki_description (urdf/base.xacro)
+
+  Body frame origin = base_link centre
+  4-wheel skid-steer:
+    front wheels : radius=0.01314 m, at x=±0.030, y=±0.024, z=-0.012
+    rear  wheels : radius=0.008995 m, at x=-0.017, y=±0.024, z=-0.01517
+
+  DiffDrive plugin uses front-left + rear-left as "left", front-right + rear-right as "right"
+  Wheel separation (y-axis):  0.048 m
+  Effective wheel radius:     0.01314 m (front, dominant)
+
+  Mesh origin in the .dae files is at the robot origin — no extra offsets needed.
+-->
+<sdf version="1.9">
+<model name="vector">
+
+  <!-- ── Base / Body ───────────────────────────────────────────────────── -->
+  <link name="base_link">
+    <inertial>
+      <mass>0.16</mass>
+      <pose>0.0075 0 -0.01 0 0 0</pose>
+      <inertia>
+        <!-- box_inertia for 73×43×61 mm body -->
+        <ixx>0.000156</ixx><ixy>0</ixy><ixz>0</ixz>
+        <iyy>0.000094</iyy><iyz>0</iyz>
+        <izz>0.000225</izz>
+      </inertia>
+    </inertial>
+
+    <!-- Visual: full mesh -->
+    <visual name="body_vis">
+      <geometry>
+        <mesh><uri>meshes/vector_body.dae</uri></mesh>
+      </geometry>
+    </visual>
+
+    <!-- Collision: simple box approximation (faster physics) -->
+    <collision name="body_col">
+      <pose>0.0075 0 -0.01 0 0 0</pose>
+      <geometry><box><size>0.070 0.043 0.055</size></box></geometry>
+      <surface>
+        <friction><ode><mu>0.5</mu><mu2>0.5</mu2></ode></friction>
+      </surface>
+    </collision>
+  </link>
+
+  <!-- ── Head (visual only, fixed) ────────────────────────────────────── -->
+  <link name="head">
+    <pose>0 0 0.027 0 0 0</pose>
+    <inertial><mass>0.03</mass>
+      <inertia><ixx>0.000005</ixx><ixy>0</ixy><ixz>0</ixz>
+               <iyy>0.000005</iyy><iyz>0</iyz><izz>0.000005</izz></inertia>
+    </inertial>
+    <visual name="head_vis">
+      <geometry><mesh><uri>meshes/vector_head.dae</uri></mesh></geometry>
+    </visual>
+    <collision name="head_col">
+      <geometry><sphere><radius>0.02</radius></sphere></geometry>
+    </collision>
+  </link>
+  <joint name="head_joint" type="fixed">
+    <parent>base_link</parent><child>head</child>
+  </joint>
+
+  <!-- ── Lift (visual only, fixed) ────────────────────────────────────── -->
+  <link name="full_lift">
+    <pose>0 0 0 0 0 0</pose>
+    <inertial><mass>0.05</mass>
+      <inertia><ixx>0.000005</ixx><ixy>0</ixy><ixz>0</ixz>
+               <iyy>0.000005</iyy><iyz>0</iyz><izz>0.000005</izz></inertia>
+    </inertial>
+    <visual name="lift_vis">
+      <geometry><mesh><uri>meshes/vector_lift.dae</uri></mesh></geometry>
+    </visual>
+  </link>
+  <joint name="lift_joint" type="fixed">
+    <parent>base_link</parent><child>full_lift</child>
+  </joint>
+
+  <!-- ── Belt visuals (fixed, cosmetic only) ───────────────────────────── -->
+  <link name="left_belt">
+    <pose>0.00945 0.024 -0.01332 0 0 0</pose>
+    <visual name="vis"><geometry><mesh><uri>meshes/cozmo_belt.dae</uri></mesh></geometry></visual>
+  </link>
+  <joint name="left_belt_joint" type="fixed">
+    <parent>base_link</parent><child>left_belt</child>
+  </joint>
+
+  <link name="right_belt">
+    <pose>0.00945 -0.024 -0.01332 0 0 0</pose>
+    <visual name="vis"><geometry><mesh><uri>meshes/cozmo_belt.dae</uri></mesh></geometry></visual>
+  </link>
+  <joint name="right_belt_joint" type="fixed">
+    <parent>base_link</parent><child>right_belt</child>
+  </joint>
+
+  <!-- ── Front-left wheel ──────────────────────────────────────────────── -->
+  <link name="front_left_wheel">
+    <pose>0.03 0.024 -0.012 1.5708 0 0</pose>
+    <inertial><mass>0.01</mass>
+      <inertia><ixx>0.0000009</ixx><ixy>0</ixy><ixz>0</ixz>
+               <iyy>0.0000009</iyy><iyz>0</iyz><izz>0.0000017</izz></inertia>
+    </inertial>
+    <collision name="col">
+      <geometry><cylinder><radius>0.01314</radius><length>0.01167</length></cylinder></geometry>
+      <surface><friction><ode><mu>1.0</mu><mu2>0.5</mu2></ode></friction></surface>
+    </collision>
+    <visual name="vis">
+      <geometry><cylinder><radius>0.01314</radius><length>0.01167</length></cylinder></geometry>
+      <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+    </visual>
+  </link>
+  <joint name="front_left_wheel_joint" type="revolute">
+    <parent>base_link</parent><child>front_left_wheel</child>
+    <axis><xyz>0 0 -1</xyz><limit><lower>-1e16</lower><upper>1e16</upper></limit></axis>
+  </joint>
+
+  <!-- ── Front-right wheel ─────────────────────────────────────────────── -->
+  <link name="front_right_wheel">
+    <pose>0.03 -0.024 -0.012 1.5708 0 0</pose>
+    <inertial><mass>0.01</mass>
+      <inertia><ixx>0.0000009</ixx><ixy>0</ixy><ixz>0</ixz>
+               <iyy>0.0000009</iyy><iyz>0</iyz><izz>0.0000017</izz></inertia>
+    </inertial>
+    <collision name="col">
+      <geometry><cylinder><radius>0.01314</radius><length>0.01167</length></cylinder></geometry>
+      <surface><friction><ode><mu>1.0</mu><mu2>0.5</mu2></ode></friction></surface>
+    </collision>
+    <visual name="vis">
+      <geometry><cylinder><radius>0.01314</radius><length>0.01167</length></cylinder></geometry>
+      <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+    </visual>
+  </link>
+  <joint name="front_right_wheel_joint" type="revolute">
+    <parent>base_link</parent><child>front_right_wheel</child>
+    <axis><xyz>0 0 -1</xyz><limit><lower>-1e16</lower><upper>1e16</upper></limit></axis>
+  </joint>
+
+  <!-- ── Rear-left wheel ───────────────────────────────────────────────── -->
+  <link name="rear_left_wheel">
+    <pose>-0.017 0.024 -0.01517 1.5708 0 0</pose>
+    <inertial><mass>0.008</mass>
+      <inertia><ixx>0.0000004</ixx><ixy>0</ixy><ixz>0</ixz>
+               <iyy>0.0000004</iyy><iyz>0</iyz><izz>0.0000008</izz></inertia>
+    </inertial>
+    <collision name="col">
+      <geometry><cylinder><radius>0.008995</radius><length>0.01167</length></cylinder></geometry>
+      <surface><friction><ode><mu>1.0</mu><mu2>0.5</mu2></ode></friction></surface>
+    </collision>
+    <visual name="vis">
+      <geometry><cylinder><radius>0.008995</radius><length>0.01167</length></cylinder></geometry>
+      <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+    </visual>
+  </link>
+  <joint name="rear_left_wheel_joint" type="revolute">
+    <parent>base_link</parent><child>rear_left_wheel</child>
+    <axis><xyz>0 0 -1</xyz><limit><lower>-1e16</lower><upper>1e16</upper></limit></axis>
+  </joint>
+
+  <!-- ── Rear-right wheel ──────────────────────────────────────────────── -->
+  <link name="rear_right_wheel">
+    <pose>-0.017 -0.024 -0.01517 1.5708 0 0</pose>
+    <inertial><mass>0.008</mass>
+      <inertia><ixx>0.0000004</ixx><ixy>0</ixy><ixz>0</ixz>
+               <iyy>0.0000004</iyy><iyz>0</iyz><izz>0.0000008</izz></inertia>
+    </inertial>
+    <collision name="col">
+      <geometry><cylinder><radius>0.008995</radius><length>0.01167</length></cylinder></geometry>
+      <surface><friction><ode><mu>1.0</mu><mu2>0.5</mu2></ode></friction></surface>
+    </collision>
+    <visual name="vis">
+      <geometry><cylinder><radius>0.008995</radius><length>0.01167</length></cylinder></geometry>
+      <material><ambient>0.1 0.1 0.1 1</ambient><diffuse>0.1 0.1 0.1 1</diffuse></material>
+    </visual>
+  </link>
+  <joint name="rear_right_wheel_joint" type="revolute">
+    <parent>base_link</parent><child>rear_right_wheel</child>
+    <axis><xyz>0 0 -1</xyz><limit><lower>-1e16</lower><upper>1e16</upper></limit></axis>
+  </joint>
+
+  <!-- DiffDrive plugin is NOT defined here — it is added per-robot in the
+       world SDF <include> block with the correct per-robot topic name
+       (/vector0/cmd_vel, /vector1/cmd_vel, etc.).
+       Having two DiffDrive plugins on the same joints causes a conflict
+       where neither plugin can drive the robot correctly. -->
+
+  <!-- ── Pose publisher ────────────────────────────────────────────────── -->
+  <plugin filename="gz-sim-pose-publisher-system"
+          name="gz::sim::systems::PosePublisher">
+    <publish_link_pose>false</publish_link_pose>
+    <publish_model_pose>true</publish_model_pose>
+    <update_frequency>50</update_frequency>
+  </plugin>
+
+</model>
+</sdf>

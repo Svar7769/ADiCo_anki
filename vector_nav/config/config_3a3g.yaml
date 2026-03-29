@@ -1,0 +1,69 @@
+# ─────────────────────────────────────────────────────────────────
+#  3 agents · 3 goals   (agents_with_same_goal=1, each own goal)
+#  observe_all_goals=False: each agent sees only its own goal
+#  obs_dim = 4 + 2×1 = 6   (confirmed from checkpoint input shape)
+# ─────────────────────────────────────────────────────────────────
+mode: sim
+n_agents: 3
+
+robots:
+  - id: "vector0"
+    serial: "00e20142"
+  - id: "vector1"
+    serial: "00e20143"
+  - id: "vector2"
+    serial: "00e20144"
+
+policy:
+  checkpoint_path: "checkpoints/navigation_3a3g_seed0.pt"
+  n_agents: 3
+  n_goals: 3                  # ceil(3 / agents_with_same_goal=1)
+  obs_dim: 10                 # 4 (x,y,vx,vy) + 2 (dx,dy to own goal) + 2*(n_agents-1) relative agent positions
+  action_dim: 2
+  u_range: 0.5
+  agents_with_same_goal: 1    # each agent has its own goal
+  num_cells: [256, 256]
+
+task:
+  agent_radius: 0.1
+  observe_all_goals: false    # checkpoint trained with each agent seeing only its own goal
+  shared_rew: false
+  collisions: false
+  max_steps: 500
+
+arena:
+  width: 2.0
+  height: 2.0
+  origin_x: 0.0
+  origin_y: 0.0
+
+goals:
+  - name: "goal0"
+    x: 0.6
+    y: 0.6
+  - name: "goal1"
+    x: -0.6
+    y: -0.6
+  - name: "goal2"
+    x: 0.0
+    y: 0.7
+
+hz: 10
+max_steps: 500
+
+ros2:
+  namespace_prefix: "vector"
+  pose_topic_prefix: "/model"
+
+camera:
+  device_id: 0
+  resolution: [1280, 720]
+  aruco_dict: "DICT_4X4_50"
+  marker_ids:
+    0: "vector0"
+    1: "vector1"
+    2: "vector2"
+    3: "goal0"
+    4: "goal1"
+    5: "goal2"
+  homography_path: "config/homography.npy"
