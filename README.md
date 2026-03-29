@@ -83,7 +83,7 @@ vector_nav/
 ### 1. Clone the repo
 
 ```bash
-git clone https://github.com/Svar7769/vector_nav.git
+git clone [https://github.com/Svar7769/vector_nav.git](https://github.com/Svar7769/ADiCo_anki.git)
 cd vector_nav
 ```
 
